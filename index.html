@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>md hower</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F2EB; --surface: #FDFAF5; --border: #D8D0C0;
+  --text: #1A1714; --muted: #8A8070; --accent: #2D2420;
+  --c1: #E24B4A; --c1-bg: #FDE4E0; --c1-mid: #F0C4AE;
+  --c2: #2E5BFF; --c2-bg: #D9E4FB; --c2-mid: #B0C8F0;
+  --c3: #B8861A; --c3-bg: #FBEFC9; --c3-mid: #F0DFA8;
+  --c4: #2E7D32; --c4-bg: #D4ECD5; --c4-mid: #AEDAAC;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Mono', monospace; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* LOGIN */
+#login-screen { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2rem; padding: 2rem; }
+.login-logo { font-family: 'DM Serif Display', serif; font-size: 3rem; letter-spacing: -0.02em; color: var(--accent); }
+.login-logo .ital { font-style: italic; color: var(--c2); }
+.login-sub { font-size: 12px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.google-btn { display: flex; align-items: center; gap: 12px; padding: 12px 24px; border: 1.5px solid var(--border); border-radius: 6px; background: var(--surface); font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text); cursor: pointer; transition: all .15s; }
+.google-btn:hover { border-color: var(--accent); box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+.google-btn svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+/* APP */
+#app { display: none; padding: 2.5rem 2rem 4rem; max-width: 1200px; margin: 0 auto; }
+
+header { display: grid; grid-template-columns: 1fr auto; gap: 2rem; margin-bottom: 2rem; align-items: start; }
+.logo-block { display: flex; flex-direction: column; gap: 4px; }
+.logo { font-family: 'DM Serif Display', serif; font-size: 2.4rem; letter-spacing: -0.02em; line-height: 1; color: var(--accent); }
+.logo .ital { font-style: italic; color: var(--c2); }
+.logo-sub { font-size: 10px; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 4px; }
+.header-right { text-align: right; display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+.date-display { font-size: 10px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.active-count { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: var(--text); display: flex; align-items: baseline; gap: 6px; }
+.active-count .num { color: var(--c2); font-style: italic; }
+.active-count .lbl { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 0.05em; }
+.header-controls { display: flex; gap: 12px; align-items: center; margin-top: 4px; }
+.user-info { display: flex; align-items: center; gap: 6px; font-size: 10px; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; }
+.user-avatar { width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--border); }
+.sync-status { display: flex; align-items: center; gap: 5px; font-size: 9px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); transition: background .3s; }
+.sync-dot.ok { background: var(--c4); }
+.sync-dot.err { background: var(--c1); }
+.sync-dot.loading { background: var(--c3); animation: pulse .8s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+.icon-btn { background: none; border: none; cursor: pointer; color: var(--muted); display: flex; align-items: center; gap: 5px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; transition: color .15s; padding: 4px; }
+.icon-btn:hover { color: var(--c1); }
+.icon-btn svg { width: 14px; height: 14px; }
+
+/* TABS + tagline row */
+.tabs-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap; }
+.tabs { display: flex; gap: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 4px; }
+.tab { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.08em; padding: 8px 18px; border: none; background: transparent; color: var(--muted); cursor: pointer; transition: all .15s; text-transform: uppercase; border-radius: 5px; display: flex; align-items: center; gap: 8px; }
+.tab.active { background: var(--accent); color: var(--bg); }
+.tab:hover:not(.active) { color: var(--text); }
+.tab-count { font-size: 10px; opacity: .6; }
+.tab.active .tab-count { opacity: .9; }
+.tagline { font-family: 'DM Serif Display', serif; font-style: italic; font-size: 1.1rem; color: var(--text); }
+
+/* MATRIX */
+.matrix-wrap { display: flex; gap: 16px; }
+.y-axis { display: flex; flex-direction: column; gap: 16px; width: 24px; flex-shrink: 0; }
+.y-label { flex: 1; display: flex; align-items: center; justify-content: center; }
+.y-label span { font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; }
+.matrix-cols { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.axis-header { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 8px; }
+.axis-col { text-align: center; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; justify-content: center; gap: 6px; }
+.axis-col .bolt { color: var(--c3); }
+.matrix-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 16px; }
+
+.quadrant { border-radius: 14px; padding: 1.25rem; display: flex; flex-direction: column; min-height: 280px; transition: box-shadow .2s; }
+.quadrant.drag-over { box-shadow: 0 0 0 2px var(--accent); }
+.q1 { background: var(--c1-bg); }
+.q2 { background: var(--c2-bg); }
+.q3 { background: var(--c3-bg); }
+.q4 { background: var(--c4-bg); }
+
+.q-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+.q-tag { font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; padding: 5px 12px; border-radius: 999px; color: #fff; }
+.q1 .q-tag { background: var(--c1); }
+.q2 .q-tag { background: var(--c2); }
+.q3 .q-tag { background: var(--c3); }
+.q4 .q-tag { background: var(--c4); }
+.q-count { font-size: 12px; color: var(--muted); font-family: 'DM Serif Display', serif; font-style: italic; }
+.q-hint { font-size: 12px; color: var(--text); margin-bottom: 14px; opacity: .65; }
+.q-hint.title { font-family: 'DM Mono', monospace; text-transform: uppercase; letter-spacing: 0.12em; font-size: 11px; opacity: .55; }
+
+.tasks { flex: 1; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; min-height: 60px; }
+.task { background: #fff; border-radius: 8px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; box-shadow: 0 1px 3px rgba(0,0,0,0.04); position: relative; transition: box-shadow .15s, opacity .15s, transform .15s; cursor: grab; animation: slideIn .15s ease; }
+.task:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+.task:active { cursor: grabbing; }
+.task.dragging { opacity: .4; }
+@keyframes slideIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:none; } }
+@keyframes fadeOut { from { opacity:1; max-height:120px; margin-bottom:8px; } to { opacity:0; max-height:0; margin-bottom:0; padding-top:0; padding-bottom:0; } }
+.task.hiding { animation: fadeOut .3s ease forwards; }
+
+.drag-handle { color: var(--muted); cursor: grab; opacity: .35; font-size: 14px; user-select: none; flex-shrink: 0; line-height: 1.2; padding-top: 2px; }
+.task:hover .drag-handle { opacity: .7; }
+.task-check { flex-shrink: 0; padding-top: 1px; }
+.task-check input { width: 16px; height: 16px; accent-color: var(--c2); cursor: pointer; }
+.task-body { flex: 1; min-width: 0; }
+.task-title { font-size: 13px; line-height: 1.4; color: var(--text); word-break: break-word; }
+.task-title.done { text-decoration: line-through; color: var(--muted); }
+.task-notes { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.4; word-break: break-word; }
+.task-assignee { font-size: 10px; color: var(--muted); margin-top: 6px; letter-spacing: 0.08em; text-transform: uppercase; display: flex; align-items: center; gap: 4px; }
+.task-due { font-size: 10px; color: var(--muted); margin-top: 3px; letter-spacing: 0.05em; }
+
+.task-actions { display: flex; flex-direction: column; gap: 4px; opacity: 0; transition: opacity .15s; flex-shrink: 0; align-items: center; }
+.task:hover .task-actions { opacity: 1; }
+.action-btn { background: none; border: none; cursor: pointer; color: var(--muted); padding: 2px; display: flex; align-items: center; justify-content: center; border-radius: 3px; transition: color .1s, background .1s; }
+.action-btn:hover { background: rgba(0,0,0,0.05); }
+.action-btn.edit:hover { color: var(--c2); }
+.action-btn.move:hover { color: var(--c3); }
+.action-btn.del:hover { color: var(--c1); }
+.action-btn svg { width: 13px; height: 13px; }
+
+/* Move popup */
+.move-popup { position: absolute; top: 8px; right: 38px; background: #fff; border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); padding: 6px; z-index: 10; min-width: 140px; }
+.move-popup-title { font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 6px 10px 4px; }
+.move-option { display: block; width: 100%; text-align: left; padding: 6px 10px; background: none; border: none; cursor: pointer; font-family: 'DM Mono', monospace; font-size: 12px; color: var(--text); border-radius: 3px; }
+.move-option:hover { background: var(--bg); }
+.move-option .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+
+.empty-zone { border: 1.5px dashed rgba(0,0,0,0.15); border-radius: 8px; padding: 2rem 1rem; text-align: center; font-style: italic; color: var(--muted); font-size: 12px; }
+
+
+/* SortableJS — clean drag visuals */
+/* ghost = placeholder showing where item will land */
+.task.sortable-ghost {
+  background: var(--surface) !important;
+  border: 1.5px dashed var(--accent);
+  box-shadow: none !important;
+}
+.task.sortable-ghost > * { visibility: hidden; }
+/* chosen = the item being dragged (stays in place visually while dragging clone moves) */
+.task.sortable-chosen { box-shadow: none; }
+/* drag = the floating clone that follows the cursor */
+.task.sortable-drag {
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+  cursor: grabbing;
+  opacity: 1 !important;
+}
+/* receiving quadrant highlight */
+.quadrant.drop-target { background: rgba(0,0,0,0.025); transition: background .15s; }
+
+/* Add row */
+.add-row { display: flex; gap: 8px; }
+.add-row input { flex: 1; min-width: 0; font-family: 'DM Mono', monospace; font-size: 16px; padding: 10px 14px; border: none; border-radius: 8px; background: rgba(255,255,255,0.7); color: var(--text); outline: none; transition: background .15s; }
+.add-row input:focus { background: #fff; }
+.add-row input::placeholder { color: var(--muted); }
+.add-row button { width: 44px; flex-shrink: 0; border: none; border-radius: 8px; background: rgba(255,255,255,0.7); color: var(--muted); cursor: pointer; font-size: 18px; transition: background .15s, color .15s; }
+.add-row button:hover { background: #fff; color: var(--text); }
+
+/* MODAL */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 100; padding: 1rem; }
+.modal-backdrop.show { display: flex; }
+.modal { background: var(--bg); border-radius: 12px; padding: 2rem; max-width: 540px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; }
+.modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
+.modal-title { font-family: 'DM Serif Display', serif; font-size: 1.8rem; font-style: italic; color: var(--text); }
+.modal-close { background: none; border: none; cursor: pointer; color: var(--muted); padding: 4px; }
+.modal-close svg { width: 20px; height: 20px; }
+.field { margin-bottom: 1rem; }
+.field-label { font-size: 11px; color: var(--text); margin-bottom: 6px; display: block; }
+.field input, .field textarea, .field select { width: 100%; font-family: 'DM Mono', monospace; font-size: 14px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; background: #fff; color: var(--text); outline: none; transition: border-color .15s; }
+.field input:focus, .field textarea:focus, .field select:focus { border-color: var(--c2); }
+.field textarea { resize: vertical; min-height: 80px; font-family: 'DM Mono', monospace; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 1.5rem; }
+.btn-cancel, .btn-save { padding: 9px 22px; border-radius: 6px; font-family: 'DM Mono', monospace; font-size: 13px; cursor: pointer; border: none; }
+.btn-cancel { background: transparent; color: var(--muted); }
+.btn-cancel:hover { color: var(--text); }
+.btn-save { background: var(--c2); color: #fff; }
+.btn-save:hover { background: #1a44d8; }
+
+@media (max-width: 700px) {
+  #app { padding: 1.5rem 1rem 3rem; }
+  header { grid-template-columns: 1fr; gap: 1rem; }
+  .header-right { align-items: flex-start; text-align: left; }
+  .logo { font-size: 1.8rem; }
+  .tabs-row { flex-direction: column; align-items: flex-start; }
+  .tagline { font-size: 1rem; }
+  .axis-header { display: none; }
+  .y-axis { display: none; }
+  .matrix-wrap { flex-direction: column; }
+  .matrix-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
+  .quadrant { min-height: unset; }
+  .task { cursor: default; }
+  .task-actions { opacity: 1; flex-direction: row; }
+  .field-row { grid-template-columns: 1fr; }
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-logo">md <span class="ital">hower</span></div>
+  <div class="login-sub">Eisenhower Matrix</div>
+  <button class="google-btn" id="login-btn">
+    <svg viewBox="0 0 48 48">
+      <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.2l6.8-6.8C35.8 2.5 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.9 6.1C12.5 13 17.8 9.5 24 9.5z"/>
+      <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17z"/>
+      <path fill="#FBBC05" d="M10.6 28.6A14.8 14.8 0 0 1 9.5 24c0-1.6.3-3.2.8-4.6l-7.9-6.1A23.9 23.9 0 0 0 0 24c0 3.9.9 7.5 2.7 10.7l7.9-6.1z"/>
+      <path fill="#34A853" d="M24 48c6.2 0 11.4-2 15.2-5.5l-7.5-5.8c-2 1.4-4.6 2.2-7.7 2.2-6.2 0-11.5-4.2-13.4-9.8l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/>
+    </svg>
+    Přihlásit se přes Google
+  </button>
+</div>
+
+<div id="app">
+  <header>
+    <div class="logo-block">
+      <div class="logo">md <span class="ital">hower</span></div>
+      <div class="logo-sub">Eisenhower Matrix</div>
+    </div>
+    <div class="header-right">
+      <div class="date-display" id="date-display"></div>
+      <div class="active-count"><span class="num" id="active-num">0</span><span class="lbl" id="active-lbl">aktivních úkolů</span></div>
+      <div class="header-controls">
+        <div class="user-info">
+          <img class="user-avatar" id="user-avatar" src="" alt="">
+          <span id="user-name"></span>
+        </div>
+        <div class="sync-status"><div class="sync-dot loading" id="sync-dot"></div><span id="sync-label">připojování…</span></div>
+        <button class="icon-btn" id="clear-btn" title="Vymazat aktuální období">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          <span id="clear-btn-label">Vymazat den</span>
+        </button>
+        <button class="icon-btn" id="signout-btn" title="Odhlásit">Odhlásit</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="tabs-row">
+    <div class="tabs">
+      <button class="tab active" data-period="day">DEN <span class="tab-count" id="tc-day">0</span></button>
+      <button class="tab" data-period="week">TÝDEN <span class="tab-count" id="tc-week">0</span></button>
+      <button class="tab" data-period="month">MĚSÍC <span class="tab-count" id="tc-month">0</span></button>
+    </div>
+    <div class="tagline" id="tagline">Co musí být hotovo dnes</div>
+  </div>
+
+  <div class="matrix-wrap">
+    <div class="y-axis">
+      <div class="y-label"><span>Důležité</span></div>
+      <div class="y-label"><span>Méně důl.</span></div>
+    </div>
+    <div class="matrix-cols">
+      <div class="axis-header">
+        <div class="axis-col"><span class="bolt">⚡</span> Urgentní</div>
+        <div class="axis-col">Neurgentní</div>
+      </div>
+      <div class="matrix-grid">
+        <div class="quadrant q1" data-q="do">
+          <div class="q-head"><span class="q-tag">Dělej hned</span><span class="q-count" id="cnt-do">0</span></div>
+          <div class="q-hint">Důležité + urgentní</div>
+          <div class="tasks" id="list-do"></div>
+          <div class="add-row"><input id="inp-do" placeholder="Přidat úkol…"><button data-q="do">+</button></div>
+        </div>
+        <div class="quadrant q2" data-q="plan">
+          <div class="q-head"><span class="q-tag">Naplánuj</span><span class="q-count" id="cnt-plan">0</span></div>
+          <div class="q-hint">Důležité + neurgentní</div>
+          <div class="tasks" id="list-plan"></div>
+          <div class="add-row"><input id="inp-plan" placeholder="Přidat úkol…"><button data-q="plan">+</button></div>
+        </div>
+        <div class="quadrant q3" data-q="delegate">
+          <div class="q-head"><span class="q-tag">Deleguj</span><span class="q-count" id="cnt-delegate">0</span></div>
+          <div class="q-hint title">Urgentní + méně důležité</div>
+          <div class="tasks" id="list-delegate"></div>
+          <div class="add-row"><input id="inp-delegate" placeholder="Přidat úkol…"><button data-q="delegate">+</button></div>
+        </div>
+        <div class="quadrant q4" data-q="eliminate">
+          <div class="q-head"><span class="q-tag">Eliminuj</span><span class="q-count" id="cnt-eliminate">0</span></div>
+          <div class="q-hint">Neurgentní + méně důležité</div>
+          <div class="tasks" id="list-eliminate"></div>
+          <div class="add-row"><input id="inp-eliminate" placeholder="Přidat úkol…"><button data-q="eliminate">+</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Upravit úkol</div>
+      <button class="modal-close" id="modal-close-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="field">
+      <label class="field-label">Název</label>
+      <input id="ed-title" type="text">
+    </div>
+    <div class="field">
+      <label class="field-label">Poznámky</label>
+      <textarea id="ed-notes"></textarea>
+    </div>
+    <div class="field field-row">
+      <div>
+        <label class="field-label">Termín</label>
+        <input id="ed-due" type="date">
+      </div>
+      <div>
+        <label class="field-label">Přiřazeno</label>
+        <input id="ed-assignee" type="text" placeholder="Jméno…">
+      </div>
+    </div>
+    <div class="field field-row">
+      <div>
+        <label class="field-label">Kvadrant</label>
+        <select id="ed-quad">
+          <option value="do">Dělej hned · Důležité + urgentní</option>
+          <option value="plan">Naplánuj · Důležité + neurgentní</option>
+          <option value="delegate">Deleguj · Urgentní + méně důležité</option>
+          <option value="eliminate">Eliminuj · Neurgentní + méně důležité</option>
+        </select>
+      </div>
+      <div>
+        <label class="field-label">Rozsah</label>
+        <select id="ed-period">
+          <option value="day">Den</option>
+          <option value="week">Týden</option>
+          <option value="month">Měsíc</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-cancel" id="modal-cancel-btn">Zrušit</button>
+      <button class="btn-save" id="modal-save-btn">Uložit</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const cfg = {
+  apiKey: "AIzaSyCgURIPgUTxv558TA7hCkexxs5z3vB0Uuc",
+  authDomain: "mdhower-7bcb8.firebaseapp.com",
+  projectId: "mdhower-7bcb8",
+  storageBucket: "mdhower-7bcb8.firebasestorage.app",
+  messagingSenderId: "1097260986215",
+  appId: "1:1097260986215:web:c1929cf33d81e8494fc9c2"
+};
+
+const app = initializeApp(cfg);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+const QS = ['do','plan','delegate','eliminate'];
+const QLABELS = { do:'Dělej hned', plan:'Naplánuj', delegate:'Deleguj', eliminate:'Eliminuj' };
+const QCOLORS = { do:'var(--c1)', plan:'var(--c2)', delegate:'var(--c3)', eliminate:'var(--c4)' };
+const TAGLINES = { day:'Úkoly na dnešní den', week:'Úkoly na tenhle týden', month:'Úkoly na tenhle měsíc' };
+const CLEAR_LABELS = { day:'Vymazat den', week:'Vymazat týden', month:'Vymazat měsíc' };
+
+let current = 'day';
+let data = { day: ep(), week: ep(), month: ep() };
+let saving = false;
+let unsub = null;
+let uid = null;
+let editing = null;
+
+function ep() { return { do:[], plan:[], delegate:[], eliminate:[] }; }
+
+function syncDot(s) {
+  document.getElementById('sync-dot').className = 'sync-dot ' + s;
+  document.getElementById('sync-label').textContent = s === 'ok' ? 'synchronizováno' : s === 'loading' ? 'ukládám…' : 'offline';
+}
+
+document.getElementById('login-screen').style.display = 'none';
+document.getElementById('app').style.display = 'none';
+
+onAuthStateChanged(auth, function(user) {
+  if (user) {
+    uid = user.uid;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    document.getElementById('user-name').textContent = user.displayName || user.email;
+    if (user.photoURL) document.getElementById('user-avatar').src = user.photoURL;
+    startSync();
+  } else {
+    uid = null;
+    if (unsub) { unsub(); unsub = null; }
+    document.getElementById('login-screen').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+});
+
+document.getElementById('login-btn').addEventListener('click', function() {
+  signInWithPopup(auth, provider).catch(function(e) {
+    alert('Chyba přihlášení: ' + e.message);
+  });
+});
+
+document.getElementById('signout-btn').addEventListener('click', function() {
+  if (confirm('Odhlásit se?')) signOut(auth);
+});
+
+document.getElementById('clear-btn').addEventListener('click', function() {
+  var periodCz = { day:'Den', week:'Týden', month:'Měsíc' };
+  if (!confirm('Opravdu vymazat všechny úkoly v období: ' + periodCz[current] + '?')) return;
+  data[current] = ep();
+  save(); render();
+});
+
+document.querySelectorAll('.tab').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    current = btn.dataset.period;
+    document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById('tagline').textContent = TAGLINES[current];
+    document.getElementById('clear-btn-label').textContent = CLEAR_LABELS[current];
+    render();
+  });
+});
+
+document.querySelectorAll('.add-row button').forEach(function(btn) {
+  btn.addEventListener('click', function() { addTask(btn.dataset.q); });
+});
+document.querySelectorAll('.add-row input').forEach(function(inp) {
+  inp.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') addTask(inp.id.replace('inp-', ''));
+  });
+});
+
+// MODAL
+document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+document.getElementById('modal-cancel-btn').addEventListener('click', closeModal);
+document.getElementById('modal-save-btn').addEventListener('click', saveModal);
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target.id === 'modal') closeModal();
+});
+
+function openModal(period, q, i) {
+  var t = data[period][q][i];
+  editing = { period: period, q: q, i: i };
+  document.getElementById('ed-title').value = t.text || '';
+  document.getElementById('ed-notes').value = t.notes || '';
+  document.getElementById('ed-due').value = t.due || '';
+  document.getElementById('ed-assignee').value = t.assignee || '';
+  document.getElementById('ed-quad').value = q;
+  document.getElementById('ed-period').value = period;
+  document.getElementById('modal').classList.add('show');
+  setTimeout(function() { document.getElementById('ed-title').focus(); }, 50);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+  editing = null;
+}
+
+function saveModal() {
+  if (!editing) return;
+  var t = data[editing.period][editing.q][editing.i];
+  var newTitle = document.getElementById('ed-title').value.trim();
+  if (!newTitle) { alert('Název nesmí být prázdný'); return; }
+  t.text = newTitle;
+  t.notes = document.getElementById('ed-notes').value.trim();
+  t.due = document.getElementById('ed-due').value;
+  t.assignee = document.getElementById('ed-assignee').value.trim();
+  var newQ = document.getElementById('ed-quad').value;
+  var newP = document.getElementById('ed-period').value;
+  if (newQ !== editing.q || newP !== editing.period) {
+    data[editing.period][editing.q].splice(editing.i, 1);
+    data[newP][newQ].push(t);
+  }
+  closeModal();
+  save(); render();
+}
+
+function startSync() {
+  if (unsub) unsub();
+  var ref = doc(db, 'users', uid);
+  unsub = onSnapshot(ref, function(snap) {
+    if (saving) return;
+    if (snap.exists()) {
+      var r = snap.data();
+      data = { day: r.day || ep(), week: r.week || ep(), month: r.month || ep() };
+      render();
+    }
+    syncDot('ok');
+  }, function() { syncDot('err'); });
+}
+
+async function save() {
+  if (!uid) return;
+  saving = true;
+  syncDot('loading');
+  try {
+    await setDoc(doc(db, 'users', uid), { day: data.day, week: data.week, month: data.month });
+    syncDot('ok');
+  } catch(e) { syncDot('err'); }
+  saving = false;
+}
+
+function fmtDate(iso) {
+  if (!iso) return '';
+  var d = new Date(iso);
+  return d.toLocaleDateString('cs-CZ', { day:'numeric', month:'numeric', year:'numeric' });
+}
+
+function render() {
+  // Tab counts (active = not done)
+  ['day','week','month'].forEach(function(p) {
+    var cnt = 0;
+    QS.forEach(function(q) { cnt += (data[p][q] || []).filter(function(t){return !t.done;}).length; });
+    document.getElementById('tc-' + p).textContent = cnt;
+  });
+
+  // Active count in header
+  var total = 0;
+  QS.forEach(function(q) { total += (data[current][q] || []).filter(function(t){return !t.done;}).length; });
+  document.getElementById('active-num').textContent = total;
+  document.getElementById('active-lbl').textContent = total === 1 ? 'aktivní úkol' : (total >= 2 && total <= 4 ? 'aktivní úkoly' : 'aktivních úkolů');
+
+  QS.forEach(function(q) {
+    var list = document.getElementById('list-' + q);
+    list.innerHTML = '';
+    var tasks = data[current][q] || [];
+    if (tasks.length === 0) {
+      var empty = document.createElement('div');
+      empty.className = 'empty-zone';
+      empty.textContent = 'Sem přetáhněte úkoly';
+      list.appendChild(empty);
+    }
+    tasks.forEach(function(t, i) {
+      var el = document.createElement('div');
+      el.className = 'task';
+      el.dataset.q = q;
+      el.dataset.i = i;
+
+      var handle = document.createElement('span');
+      handle.className = 'drag-handle';
+      handle.textContent = '⠿';
+
+      var checkWrap = document.createElement('span');
+      checkWrap.className = 'task-check';
+      var chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.checked = !!t.done;
+      chk.addEventListener('change', function() { toggleDone(q, i, el); });
+      checkWrap.appendChild(chk);
+
+      var body = document.createElement('div');
+      body.className = 'task-body';
+      var title = document.createElement('div');
+      title.className = 'task-title' + (t.done ? ' done' : '');
+      title.textContent = t.text;
+      body.appendChild(title);
+      if (t.notes) {
+        var notes = document.createElement('div');
+        notes.className = 'task-notes';
+        notes.textContent = t.notes;
+        body.appendChild(notes);
+      }
+      if (t.due) {
+        var due = document.createElement('div');
+        due.className = 'task-due';
+        due.textContent = '📅 ' + fmtDate(t.due);
+        body.appendChild(due);
+      }
+      if (t.assignee) {
+        var asg = document.createElement('div');
+        asg.className = 'task-assignee';
+        asg.textContent = '👤 ' + t.assignee;
+        body.appendChild(asg);
+      }
+
+      var actions = document.createElement('div');
+      actions.className = 'task-actions';
+
+      var editBtn = document.createElement('button');
+      editBtn.className = 'action-btn edit';
+      editBtn.title = 'Upravit';
+      editBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+      editBtn.addEventListener('click', function(e) { e.stopPropagation(); openModal(current, q, i); });
+
+      var moveBtn = document.createElement('button');
+      moveBtn.className = 'action-btn move';
+      moveBtn.title = 'Přesunout';
+      moveBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+      moveBtn.addEventListener('click', function(e) { e.stopPropagation(); showMovePopup(el, q, i); });
+
+      var delBtn = document.createElement('button');
+      delBtn.className = 'action-btn del';
+      delBtn.title = 'Smazat';
+      delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>';
+      delBtn.addEventListener('click', function(e) { e.stopPropagation(); delTask(q, i); });
+
+      actions.appendChild(editBtn);
+      actions.appendChild(moveBtn);
+      actions.appendChild(delBtn);
+
+      el.appendChild(handle);
+      el.appendChild(checkWrap);
+      el.appendChild(body);
+      el.appendChild(actions);
+
+      // Drag events
+      list.appendChild(el);
+    });
+    document.getElementById('cnt-' + q).textContent = tasks.length;
+  });
+}
+
+// Move popup
+function showMovePopup(taskEl, q, i) {
+  closeMovePopup();
+  var pop = document.createElement('div');
+  pop.className = 'move-popup';
+  pop.innerHTML = '<div class="move-popup-title">Přesunout do…</div>';
+  QS.forEach(function(dest) {
+    if (dest === q) return;
+    var btn = document.createElement('button');
+    btn.className = 'move-option';
+    btn.innerHTML = '<span class="dot" style="background:' + QCOLORS[dest] + '"></span>' + QLABELS[dest];
+    btn.addEventListener('click', function() {
+      var task = data[current][q].splice(i, 1)[0];
+      data[current][dest].push(task);
+      closeMovePopup(); save(); render();
+    });
+    pop.appendChild(btn);
+  });
+  taskEl.appendChild(pop);
+  setTimeout(function() {
+    document.addEventListener('click', closeMovePopupHandler);
+  }, 0);
+}
+
+function closeMovePopupHandler(e) {
+  if (e.target.closest('.move-popup')) return;
+  closeMovePopup();
+}
+
+function closeMovePopup() {
+  document.querySelectorAll('.move-popup').forEach(function(p) { p.remove(); });
+  document.removeEventListener('click', closeMovePopupHandler);
+}
+
+// Quadrant drop targets
+// SortableJS — works on mobile (touch) AND desktop, with visual placeholder
+var sortables = [];
+function initSortables() {
+  sortables.forEach(function(s) { s.destroy(); });
+  sortables = [];
+  QS.forEach(function(q) {
+    var listEl = document.getElementById('list-' + q);
+    var s = Sortable.create(listEl, {
+      group: 'tasks',
+      animation: 200,
+      easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      dragClass: 'sortable-drag',
+      handle: '.drag-handle',
+      filter: '.empty-zone',
+      delay: 0,
+      touchStartThreshold: 5,
+      forceFallback: true,
+      fallbackTolerance: 8,
+      fallbackOnBody: true,
+      onStart: function() {
+        document.body.style.cursor = 'grabbing';
+      },
+      onEnd: function() {
+        document.body.style.cursor = '';
+        document.querySelectorAll('.quadrant').forEach(function(qd){ qd.classList.remove('drop-target'); });
+      },
+      onChange: function(evt) {
+        document.querySelectorAll('.quadrant').forEach(function(qd){ qd.classList.remove('drop-target'); });
+        if (evt.to) {
+          var q = evt.to.closest('.quadrant');
+          if (q) q.classList.add('drop-target');
+        }
+      },
+      onAdd: function(evt) {
+        // moved between quadrants
+        var srcQ = evt.from.dataset.q;
+        var destQ = evt.to.dataset.q;
+        var task = data[current][srcQ].splice(evt.oldIndex, 1)[0];
+        if (!task) return;
+        data[current][destQ].splice(evt.newIndex, 0, task);
+        save(); render();
+      },
+      onUpdate: function(evt) {
+        // reordered within same quadrant
+        var qq = evt.from.dataset.q;
+        var task = data[current][qq].splice(evt.oldIndex, 1)[0];
+        if (!task) return;
+        data[current][qq].splice(evt.newIndex, 0, task);
+        save(); render();
+      }
+    });
+    listEl.dataset.q = q;
+    sortables.push(s);
+  });
+}
+
+function addTask(q) {
+  var inp = document.getElementById('inp-' + q);
+  var val = inp.value.trim();
+  if (!val) return;
+  data[current][q].push({ text: val, done: false });
+  inp.value = '';
+  save(); render();
+}
+
+function toggleDone(q, i, el) {
+  el.classList.add('hiding');
+  el.addEventListener('animationend', function() {
+    data[current][q].splice(i, 1);
+    save(); render();
+  }, { once: true });
+}
+
+function delTask(q, i) {
+  data[current][q].splice(i, 1);
+  save(); render();
+}
+
+// Date display
+var d = new Date();
+document.getElementById('date-display').textContent =
+  d.toLocaleDateString('cs-CZ', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+document.getElementById('tagline').textContent = TAGLINES.day;
+document.getElementById('clear-btn-label').textContent = CLEAR_LABELS.day;
+initSortables();
+</script>
+</body>
+</html>
